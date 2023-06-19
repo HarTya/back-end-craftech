@@ -1,0 +1,181 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  phone     String @unique
+  password  String
+  lastName  String @map("last_name")
+  firstName String @map("first_name")
+
+  role EnumUserRole @default(USER)
+
+  avatarPath String @default("/images/avatar.png") @map("avatar_path")
+
+  orders    Order[]
+  reviews   Review[]
+  favorites Product[] @relation(name: "UserFavorites")
+
+  products        Product[]        @relation(name: "AdminProducts")
+  categories      Category[]
+  subcategories   Subcategory[]
+  characteristics Characteristic[]
+
+  @@map("user")
+}
+
+enum EnumUserRole {
+  USER
+  ADMIN
+}
+
+model Product {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name        String   @unique
+  slug        String   @unique
+  description String
+  price       Int
+  status      String   @default("В наявності")
+  images      String[]
+  sizes       String   @default("44 46 48 50 52 54 56 58 60")
+
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId Int?      @map("category_id")
+
+  subcategory   Subcategory? @relation(fields: [subcategoryId], references: [id])
+  subcategoryId Int?         @map("subcategory_id")
+
+  user       User? @relation(name: "UserFavorites", fields: [favoriteId], references: [id])
+  favoriteId Int?  @map("favorite_id")
+
+  admin   User @relation(name: "AdminProducts", fields: [adminId], references: [id])
+  adminId Int  @map("admin_id")
+
+  orderItems      OrderItem[]
+  reviews         Review[]
+  characteristics Characteristic[]
+
+  @@map("product")
+}
+
+model Characteristic {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  title       String
+  description String
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int     @map("product_id")
+
+  admin   User @relation(fields: [adminId], references: [id])
+  adminId Int  @map("admin_id")
+
+  @@map("characteristic")
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String @unique
+  slug String @unique
+
+  products      Product[]
+  subcategories Subcategory[]
+
+  admin   User @relation(fields: [adminId], references: [id])
+  adminId Int  @map("admin_id")
+
+  @@map("category")
+}
+
+model Subcategory {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  name String
+  slug String @unique
+
+  products Product[]
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int      @map("category_id")
+
+  admin   User @relation(fields: [adminId], references: [id])
+  adminId Int  @map("admin_id")
+
+  @@map("subcategory")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  rating Int
+  text   String
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @map("user_id")
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int     @map("product_id")
+
+  @@map("review")
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  size     String
+  quantity Int
+  price    Int
+
+  product   Product? @relation(fields: [productId], references: [id])
+  productId Int?     @map("product_id")
+
+  order   Order? @relation(fields: [orderId], references: [id])
+  orderId Int?   @map("order_id")
+
+  @@map("order_item")
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  status EnumOrderStatus @default(PENDING)
+
+  items OrderItem[]
+  total Int
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @map("user_id")
+
+  @@map("order")
+}
+
+enum EnumOrderStatus {
+  PENDING
+  SHIPPED
+  DELIVERED
+}
