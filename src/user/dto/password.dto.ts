@@ -32,14 +32,14 @@ export class PasswordDto implements Prisma.UserUpdateInput {
 	})
 	@IsStrongPassword(
 		{
-			minLowercase: 0,
-			minUppercase: 1,
+			minLowercase: 1,
+			minUppercase: 0,
 			minNumbers: 1,
 			minSymbols: 0
 		},
 		{
 			message:
-				'Новий пароль недостатньо надійний (принаймні 1 велика літера англійського алфавіту та 1 цифра)'
+				'Новий пароль недостатньо надійний (принаймні 1 мала літера англійського алфавіту та 1 цифра)'
 		}
 	)
 	@MinLength(8, {
