@@ -35,8 +35,8 @@ export class ProductDto implements Prisma.ProductUpdateInput {
 	@MinLength(10, {
 		message: 'Опис товару має бути не коротшим за 10 символів'
 	})
-	@MaxLength(1000, {
-		message: 'Опис товару має бути не довшим за 1000 символів'
+	@MaxLength(5000, {
+		message: 'Опис товару має бути не довшим за 5000 символів'
 	})
 	description: string
 
