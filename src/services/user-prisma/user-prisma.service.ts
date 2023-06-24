@@ -108,7 +108,18 @@ export class UserPrismaService {
 				select: orderObject
 			},
 			reviews: {
-				select: reviewObject
+				select: {
+					...reviewObject,
+					product: {
+						select: {
+							id: true,
+							name: true,
+							slug: true,
+							price: true,
+							images: true
+						}
+					}
+				}
 			}
 		})
 
