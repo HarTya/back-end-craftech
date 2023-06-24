@@ -1,15 +1,7 @@
-import { Prisma } from '@prisma/client'
-import {
-	IsString,
-	IsStrongPassword,
-	Matches,
-	MaxLength,
-	MinLength,
-	Validate
-} from 'class-validator'
-import { CustomMatchPasswords } from './confirmPassword'
+import { IsString, Matches, MaxLength, MinLength } from 'class-validator'
+import { OrderDto } from './order.dto'
 
-export class RegisterDto implements Prisma.UserUpdateInput {
+export class OrderUnauthorizedDto extends OrderDto {
 	@IsString({
 		message: 'Номер телефону повинен бути рядком'
 	})
@@ -17,38 +9,6 @@ export class RegisterDto implements Prisma.UserUpdateInput {
 		message: 'Недійсний номер телефону'
 	})
 	phone: string
-
-	@IsString({
-		message: 'Пароль повинен бути рядком'
-	})
-	@Matches(/^[^\s]+(\s+[^\s]+)*$/, {
-		message: 'Пароль не повинен починатися або закінчуватися пробілом'
-	})
-	@IsStrongPassword(
-		{
-			minLowercase: 1,
-			minUppercase: 0,
-			minNumbers: 1,
-			minSymbols: 0
-		},
-		{
-			message:
-				'Пароль недостатньо надійний (принаймні 1 мала літера англійського алфавіту та 1 цифра)'
-		}
-	)
-	@MinLength(8, {
-		message: 'Пароль має бути не коротшим за 8 символів'
-	})
-	@MaxLength(16, {
-		message: 'Пароль має бути не довшим за 16 символів'
-	})
-	password: string
-
-	@IsString({
-		message: 'Підтвердження паролю повинно бути рядком'
-	})
-	@Validate(CustomMatchPasswords, ['password'])
-	confirmPassword: string
 
 	@IsString({
 		message: 'Прізвище повинно бути рядком'

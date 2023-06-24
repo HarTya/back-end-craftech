@@ -163,19 +163,28 @@ model Order {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  status EnumOrderStatus @default(PENDING)
+  pickupType EnumOrderPickupType @map("pickup_type")
+
+  day  String
+  time String
+
+  city             String
+  postOfficeNumber Int    @map("post_office_number")
 
   items OrderItem[]
   total Int
 
-  user   User @relation(fields: [userId], references: [id])
-  userId Int  @map("user_id")
+  phone     String
+  lastName  String @map("last_name")
+  firstName String @map("first_name")
+
+  user   User? @relation(fields: [userId], references: [id])
+  userId Int?  @map("user_id")
 
   @@map("order")
 }
 
-enum EnumOrderStatus {
-  PENDING
-  SHIPPED
-  DELIVERED
+enum EnumOrderPickupType {
+  STORE
+  POST_OFFICE
 }

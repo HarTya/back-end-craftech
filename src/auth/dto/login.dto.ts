@@ -5,7 +5,7 @@ export class LoginDto implements Prisma.UserUpdateInput {
 	@IsString({
 		message: 'Номер телефону повинен бути рядком'
 	})
-	@Matches(/^\+38(0\d{9})$/, {
+	@Matches(/^0\d{9}$/, {
 		message: 'Недійсний номер телефону'
 	})
 	phone: string

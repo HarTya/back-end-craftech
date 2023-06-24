@@ -7,6 +7,7 @@ import { Prisma } from '@prisma/client'
 import { hash, verify } from 'argon2'
 import { LoginDto } from 'src/auth/dto/login.dto'
 import { RegisterDto } from 'src/auth/dto/register.dto'
+import { orderObject } from 'src/order/objects/order.object'
 import { productObject } from 'src/product/objects/product.object'
 import { reviewObject } from 'src/review/objects/review.object'
 import { PasswordDto } from 'src/user/dto/password.dto'
@@ -87,7 +88,9 @@ export class UserPrismaService {
 
 		if (!user) throw new BadRequestException('Невірні облікові дані')
 
-		const isPasswordValid = await verify(user.password, dto.password)
+		const isPasswordValid = await verify(user.password, dto.password).catch(
+			() => user.password === dto.password
+		)
 
 		if (!isPasswordValid) throw new BadRequestException('Невірні облікові дані')
 
@@ -98,21 +101,14 @@ export class UserPrismaService {
 		const user = await this.getUniqueUserByIdWithFavoritesAndOther(userId, {
 			phone: true,
 			lastName: true,
-			orders: true,
+			orders: {
+				orderBy: {
+					createdAt: 'desc'
+				},
+				select: orderObject
+			},
 			reviews: {
-				select: {
-					...reviewObject,
-					product: {
-						select: {
-							id: true,
-							name: true,
-							slug: true,
-							description: true,
-							price: true,
-							images: true
-						}
-					}
-				}
+				select: reviewObject
 			}
 		})
 
@@ -141,7 +137,9 @@ export class UserPrismaService {
 	async changeUserPassword(userId: number, dto: PasswordDto) {
 		const user = await this.getUniqueUserById(userId)
 
-		const isPasswordValid = await verify(user.password, dto.password)
+		const isPasswordValid = await verify(user.password, dto.password).catch(
+			() => user.password === dto.password
+		)
 
 		if (!isPasswordValid) throw new BadRequestException('Недійсний пароль')
 

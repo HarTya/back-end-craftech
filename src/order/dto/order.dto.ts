@@ -1,21 +1,84 @@
-import { EnumOrderStatus, Prisma } from '@prisma/client'
-import { Type } from 'class-transformer'
+import { Prisma } from '@prisma/client'
+import { Transform, TransformFnParams, Type } from 'class-transformer'
 import {
 	ArrayMinSize,
 	IsArray,
 	IsEnum,
 	IsNumber,
-	IsOptional,
 	IsString,
+	Matches,
+	Max,
+	MaxLength,
+	Min,
+	MinLength,
+	ValidateIf,
 	ValidateNested
 } from 'class-validator'
 
+export enum EnumOrderPickupType {
+	STORE = 'STORE',
+	POST_OFFICE = 'POST_OFFICE'
+}
+
 export class OrderDto {
-	@IsOptional()
-	@IsEnum(EnumOrderStatus, {
-		message: 'Помилковий статус замовлення'
+	@IsEnum(EnumOrderPickupType, {
+		message: 'Помилковий тип отримання замовлення'
 	})
-	status: EnumOrderStatus
+	pickupType: EnumOrderPickupType
+
+	@ValidateIf(dto => dto.pickupType === EnumOrderPickupType.STORE)
+	@IsString({ message: 'День отримання замовлення повинен бути рядком' })
+	@Transform(({ value }: TransformFnParams) =>
+		typeof value === 'string' ? value.trim() : null
+	)
+	@Matches(/^[А-ЩЬЮЯҐЄІЇ][а-щьюяґєії']*$/, {
+		message:
+			'День отримання замовлення повинен починатися з великої літери, містити лише українські символи та бути без пробілів'
+	})
+	@MinLength(2, {
+		message: 'День отримання замовлення має бути не коротшим за 2 символи'
+	})
+	@MaxLength(30, {
+		message: 'День отримання замовлення має бути не довшим за 30 символів'
+	})
+	day: string
+
+	@ValidateIf(dto => dto.pickupType === EnumOrderPickupType.STORE)
+	@IsString({ message: 'Час отримання замовлення повинен бути рядком' })
+	@Matches(/^[1][2-8]:[0-5][0-9]$/, {
+		message: 'Неможливий час отримання замовлення'
+	})
+	time: string
+
+	@ValidateIf(dto => dto.pickupType === EnumOrderPickupType.POST_OFFICE)
+	@IsString({ message: 'Назва міста повинна бути рядком' })
+	@Transform(({ value }: TransformFnParams) =>
+		typeof value === 'string' ? value.trim() : null
+	)
+	@Matches(/^[А-ЩЬЮЯҐЄІЇ][а-щьюяґєії' ]*$/, {
+		message:
+			'Назва міста повинна починатися з великої літери та містити лише українські символи'
+	})
+	@MinLength(2, {
+		message: 'Назва міста має бути не коротшою за 2 символи'
+	})
+	@MaxLength(30, {
+		message: 'Назва міста має бути не довшою за 30 символів'
+	})
+	city: string
+
+	@ValidateIf(dto => dto.pickupType === EnumOrderPickupType.POST_OFFICE)
+	@IsNumber(
+		{},
+		{ message: 'Номер відділення "Нової пошти" повинен бути числом' }
+	)
+	@Min(1, {
+		message: 'Нумерація відділень "Нової пошти" починається з 1'
+	})
+	@Max(50000, {
+		message: 'Номер відділення "Нової пошти" не повинен перевищувати 50000'
+	})
+	postOfficeNumber: number
 
 	@IsArray({ message: 'Позиції замовлення повинні бути масивом' })
 	@ArrayMinSize(1, {
@@ -42,7 +105,7 @@ export class OrderItemDto implements Prisma.OrderItemUpdateInput {
 	)
 	quantity: number
 
-	@IsNumber({}, { message: 'Ціна позиції замовлення повинна бути числом' })
+	@IsNumber({}, { message: 'Вартість позиції замовлення повинна бути числом' })
 	price: number
 
 	@IsNumber(
