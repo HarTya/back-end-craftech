@@ -3,8 +3,8 @@ import { PaginationDto } from 'src/pagination/dto/pagination.dto'
 
 export enum EnumProductsSort {
 	NEWEST = 'newest',
-	HIGH_PRICE = 'high-price',
 	LOW_PRICE = 'low-price',
+	HIGH_PRICE = 'high-price',
 	OLDEST = 'oldest'
 }
 
