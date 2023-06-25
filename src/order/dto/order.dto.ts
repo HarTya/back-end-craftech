@@ -55,7 +55,7 @@ export class OrderDto {
 	@Transform(({ value }: TransformFnParams) =>
 		typeof value === 'string' ? value.trim() : null
 	)
-	@Matches(/^[А-ЩЬЮЯҐЄІЇ][а-щьюяґєії' ]*$/, {
+	@Matches(/^[А-ЩЬЮЯҐЄІЇ][а-щьюяґєії' А-ЩЬЮЯҐЄІЇ]*$/, {
 		message:
 			'Назва міста повинна починатися з великої літери та містити лише українські символи'
 	})
