@@ -2,9 +2,9 @@ import { IsEnum, IsOptional, IsString } from 'class-validator'
 import { PaginationDto } from 'src/pagination/dto/pagination.dto'
 
 export enum EnumProductsSort {
+	NEWEST = 'newest',
 	HIGH_PRICE = 'high-price',
 	LOW_PRICE = 'low-price',
-	NEWEST = 'newest',
 	OLDEST = 'oldest'
 }
 

@@ -32,14 +32,14 @@ export class ProductPrismaService {
 		const prismaSort: Prisma.ProductOrderByWithRelationInput[] = []
 
 		switch (sort) {
+			case EnumProductsSort.NEWEST:
+				prismaSort.push({ createdAt: 'desc' })
+				break
 			case EnumProductsSort.HIGH_PRICE:
 				prismaSort.push({ price: 'desc' })
 				break
 			case EnumProductsSort.LOW_PRICE:
 				prismaSort.push({ price: 'asc' })
-				break
-			case EnumProductsSort.NEWEST:
-				prismaSort.push({ createdAt: 'desc' })
 				break
 			case EnumProductsSort.OLDEST:
 				prismaSort.push({ createdAt: 'asc' })
