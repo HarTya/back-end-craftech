@@ -20,7 +20,8 @@ export class CharacteristicPrismaService {
 		title: string
 	) {
 		const isCharacteristicExists = productCharacteristics.some(
-			characteristic => characteristic.title === title.trim()
+			characteristic =>
+				characteristic.title.toLowerCase() === title.toLowerCase().trim()
 		)
 
 		if (isCharacteristicExists)

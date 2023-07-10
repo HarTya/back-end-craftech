@@ -57,7 +57,8 @@ export class OrderPrismaService {
 				items: {
 					create: dto.items
 				},
-				total: Math.ceil(dto.total),
+				total: +dto.total.toFixed(0),
+				comment: dto.comment.trim(),
 				phone: user ? user.phone : 'phone' in dto && dto.phone,
 				lastName: user ? user.lastName : 'lastName' in dto && dto.lastName,
 				firstName: user ? user.firstName : 'firstName' in dto && dto.firstName,

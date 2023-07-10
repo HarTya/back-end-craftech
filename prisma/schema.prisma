@@ -171,8 +171,9 @@ model Order {
   city             String
   postOfficeNumber Int    @map("post_office_number")
 
-  items OrderItem[]
-  total Int
+  items   OrderItem[]
+  total   Int
+  comment String
 
   phone     String
   lastName  String @map("last_name")

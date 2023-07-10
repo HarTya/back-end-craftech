@@ -21,6 +21,7 @@ export const orderObject: Prisma.OrderSelect = {
 		}
 	},
 	total: true,
+	comment: true,
 	phone: true,
 	lastName: true,
 	firstName: true,

@@ -93,6 +93,15 @@ export class OrderDto {
 
 	@IsNumber({}, { message: 'Загальна вартість замовлення повинна бути числом' })
 	total: number
+
+	@IsString({ message: 'Коментар до замовлення повинен бути рядком' })
+	@Transform(({ value }: TransformFnParams) =>
+		typeof value === 'string' ? value.trim() : null
+	)
+	@MaxLength(2000, {
+		message: 'Коментар до замовлення занадто довгий'
+	})
+	comment: string
 }
 
 export class OrderItemDto implements Prisma.OrderItemUpdateInput {

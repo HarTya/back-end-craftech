@@ -62,7 +62,7 @@ export class ReviewPrismaService {
 
 		return this.prisma.review.create({
 			data: {
-				rating: dto.rating,
+				rating: +dto.rating.toFixed(0),
 				text: dto.text.trim(),
 				user: {
 					connect: {
